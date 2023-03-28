@@ -41,3 +41,68 @@
 ### Router
 
 - May use specific schedulers that reserve resources (in order to ensure QoS to Terminal 1).
+
+
+# Setup
+
+Enable IP Forwarding (resets after reboot)
+
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+
+Create and enable Python Env
+    
+    python -m venv env
+    source env/bin/activate 
+
+Install module
+
+    pip install json2netns 
+
+Source: https://github.com/cooperlees/json2netns
+
+Create base network
+
+    sudo json2netns base.json create
+
+Open terminal into a custom namespace
+
+    sudo ip netns exec right bash
+    sudo ip netns exec left bash
+
+Diagram of network
+
+![](images/scheme.png) 
+
+
+With a /32 prefix, there is no subnet or network, and all traffic to and from the device will go directly between the device and the default gateway.
+
+# Generate traffic
+
+Open terminal with right namespace
+
+    # Needs to bind to loopback interface
+    iperf3 -s -B 192.168.2.1
+
+Open terminal with left namespace
+
+    # Generate traffic at 100M/s
+    iperf3 -c 192.168.2.1 -u -b 100M
+
+# Limit connection bandwidth
+
+To limit the rate of connection using the tc command, use the following syntax:
+
+    tc qdisc add dev [INTERFACE] root tbf rate [RATE] burst [BURST] latency [LATENCY]
+
+Where:
+
+- [INTERFACE] is the name of the network interface you want to limit.
+- [RATE] is the maximum rate of data transfer, in kilobits per second (Kbps) or megabits per second (Mbps).
+- [BURST] is the maximum amount of data that can be sent at once, in kilobits or megabits.
+- [LATENCY] is the amount of time it takes for the token bucket filter to refill, in milliseconds (ms).
+
+For example, to limit the rate of connection on interface eth0 to 1 Mbps with a burst size of 10 Kbps and a latency of 100 ms, you would use the following command:
+
+    tc qdisc add dev eth0 root tbf rate 1mbit burst 10kbit latency 100ms
+
+This command needs to be applied on both **veth** interfaces in the respective namespaces.
