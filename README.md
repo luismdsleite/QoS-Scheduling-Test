@@ -20,28 +20,31 @@
 
 ## Scheme
 
-![](images/TAR-scheme.drawio.png) 
+### Basic scheme
 
-### Terminals and router
+![](images/TAR-scheme.drawio.svg) 
 
-- Uses **iperf** to generate/receive traffic.
+### Multi-terminal scheme
 
-- Uses **NetEM** to worsen the link's condition.
+![](images/TAR-multi-scheme.drawio.svg)
 
-- Uses **tc** to test several schedulers and several traffic policing and shaping settings.
+### Terminals
 
-### Terminal 1
+- Each terminal possesses two network namespaces so it accurately can measure specific time-dependent variables e.g., one-way delay.
 
-- Possesses two interfaces to the same network so it can measure specific time-dependent variables e.g., one-way delay.
+- Uses **iperf** to send traffic through one network namespace and receive it through another one.
 
-### Terminal 2
+### Throttler
 
 - Responsible for generating cross-traffic (via **iperf**).
 
-### Router
+### Router 1
 
-- May use specific schedulers that reserve resources (in order to ensure QoS to Terminal 1).
+- Uses **NetEM** to worsen the link between Router 1 and Router 2.
 
+- Uses **tc** to test several schedulers.
+
+- May use specific schedulers that reserve resources (in order to ensure QoS to the Terminals).
 
 # Setup
 
