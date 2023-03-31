@@ -34,10 +34,6 @@
 
 - Uses **iperf** to send traffic through one network namespace and receive it through another one.
 
-### Throttler
-
-- Responsible for generating cross-traffic (via **iperf**).
-
 ### Router 1
 
 - Uses **NetEM** to worsen the link between Router 1 and Router 2.
@@ -48,38 +44,36 @@
 
 # Setup
 
+## Virtual Namespaces
+Create the 2 namespaces:
+```bash
+ip netns add v1s6
+ip netns add v1s7
+```
+
+Add the interfaces to the network namespaces:
+```bash 
+ip link set dev enp1s6 netns v1s6
+ip link set dev enp1s7 netns v1s7
+```
+
+Activate the interfaces and give them each an IP
+```bash
+ip netns exec v1s6 ip l set dev enp1s6 up 
+ip netns exec v1s6 ip a add 192.168.20.2/24 dev enp1s6
+ip netns exec v1s6 ip r add default via 192.168.20.1
+
+ip netns exec v1s7 ip l set dev enp1s7 up 
+ip netns exec v1s7 ip a add 192.168.10.2/24 dev enp1s7
+ip netns exec v1s7 ip r add default via 192.168.10.1
+```
+
+## Linux Router
 Enable IP Forwarding (resets after reboot)
 
     echo 1 > /proc/sys/net/ipv4/ip_forward
 
-Create and enable Python Env
-    
-    python -m venv env
-    source env/bin/activate 
-
-Install module
-
-    pip install json2netns 
-
-Source: https://github.com/cooperlees/json2netns
-
-Create base network
-
-    sudo json2netns base.json create
-
-Open terminal into a custom namespace
-
-    sudo ip netns exec right bash
-    sudo ip netns exec left bash
-
-Diagram of network
-
-![](images/scheme.png) 
-
-
-With a /32 prefix, there is no subnet or network, and all traffic to and from the device will go directly between the device and the default gateway.
-
-# Generate traffic
+## Generate traffic via iperf3
 
 Open terminal with right namespace
 
@@ -91,12 +85,43 @@ Open terminal with left namespace
     # Generate traffic at 100M/s
     iperf3 -c 192.168.2.1 -u -b 100M
 
-# Limit connection bandwidth
+
+## Emulate other connections via NetEm
+
+Delay:
+    
+    sudo tc qdisc add dev eth2 root netem delay 100ms 10ms 25%
+    
+This causes the added delay to be 100ms ± 10ms with the next random element depending 25%
+on the last one. This isn't true statistical correlation, but an approximation.
+
+Packet Loss:
+
+    sudo tc qdisc change dev eth2 root netem loss 5% 25%
+
+This will cause 5% of packets to be lost, and each successive probability depends by a quarter
+on the last one.
+Prob(n) = .25 * Prob(n­1) + .75 * Random
+
+Packet Corruption:
+
+    sudo tc qdisc change dev eth2 root netem corrupt 5%
+
+Random noise can be emulated with the corrupt option. This introduces a single bit error at a
+random offset in the packet.
+
+Packet Re­ordering:
+
+    sudo tc qdisc change dev eth2 root netem delay 10ms reorder 25% 50%
+    
+In this example, 25% of packets (with a correlation of 50%) will get sent immediately, others will
+be delayed by 10ms.
+
+## Limit connection bandwidth
 
 To limit the rate of connection using the tc command, use the following syntax:
 
     tc qdisc add dev [INTERFACE] root tbf rate [RATE] burst [BURST] latency [LATENCY]
-
 Where:
 
 - [INTERFACE] is the name of the network interface you want to limit.
