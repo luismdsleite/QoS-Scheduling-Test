@@ -20,11 +20,11 @@
 
 ## Topology
 
-### Basic topology
+### Single Terminal topology
 
 ![](images/TAR-scheme.drawio.svg) 
 
-### Multi-terminal topology
+### Multi Terminal topology
 
 ![](images/TAR-multi-scheme.drawio.svg)
 
