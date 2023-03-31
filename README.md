@@ -18,13 +18,13 @@
 
 - **Network Namespaces**: A Linux kernel feature allowing us to isolate network environments through virtualization. In this project we will use this feature to precisely compare the characteristics of different traffic policing and shaping settings (like jitter, ...).
 
-## Scheme
+## Topology
 
-### Basic scheme
+### Basic topology
 
 ![](images/TAR-scheme.drawio.svg) 
 
-### Multi-terminal scheme
+### Multi-terminal topology
 
 ![](images/TAR-multi-scheme.drawio.svg)
 
