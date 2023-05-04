@@ -1,4 +1,5 @@
 ## Interfaces
+
 /etc/sysconfig/network-scripts/ifcfg-enp1s7:
 
 ```bash
@@ -14,6 +15,7 @@ ONBOOT=yes
 NOZEROCONF=yes
 DEFROUTE=no
 ```
+
 /etc/sysconfig/network-scripts/ifcfg-enp1s6:
 
 ```bash
@@ -38,10 +40,24 @@ DEFROUTE=no
 
 ## Terminals
 
-- LABS5609 ->
-    - 192.168.10.2
-    - 192.168.20.2
+- LABS5610 192.168.56.20 (router) ->
+  
+  - 192.168.10.1
+  - 192.168.20.1
 
-- LABS5610 (router) ->
-    - 192.168.10.1
-    - 192.168.20.1
+- LABS5609 192.168.56.19 ->
+  
+  - 192.168.10.2
+  - 192.168.20.2
+
+- LABS5601 192.168.56.11 ->
+  
+  - 192.168.10.3
+  
+  - 192.168.20.3
+
+- Sem Nome 192.168.56.18 ->
+  
+  - 192.168.10.5
+  
+  - 192.168.20.5

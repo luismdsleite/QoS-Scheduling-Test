@@ -45,19 +45,23 @@
 # Setup
 
 ## Virtual Namespaces
+
 Create the 2 namespaces:
+
 ```bash
 ip netns add v1s6
 ip netns add v1s7
 ```
 
 Add the interfaces to the network namespaces:
-```bash 
+
+```bash
 ip link set dev enp1s6 netns v1s6
 ip link set dev enp1s7 netns v1s7
 ```
 
 Activate the interfaces and give them each an IP
+
 ```bash
 ip netns exec v1s6 ip l set dev enp1s6 up 
 ip netns exec v1s6 ip a add 192.168.20.2/24 dev enp1s6
@@ -69,12 +73,14 @@ ip netns exec v1s7 ip r add default via 192.168.10.1
 ```
 
 Execute bash on a interface
+
 ```bash
 ip netns exec v1s6 bash
 ip netns exec v1s7 bash
 ```
 
 ## Linux Router
+
 Enable IP Forwarding (resets after reboot)
 
     echo 1 > /proc/sys/net/ipv4/ip_forward
@@ -91,13 +97,12 @@ Open terminal with left namespace
     # Generate traffic at 100M/s
     iperf3 -c 192.168.2.1 -u -b 100M
 
-
 ## Emulate other connections via NetEm
 
 Delay:
-    
+
     sudo tc qdisc add dev eth2 root netem delay 100ms 10ms 25%
-    
+
 This causes the added delay to be 100ms ± 10ms with the next random element depending 25%
 on the last one. This isn't true statistical correlation, but an approximation.
 
@@ -119,7 +124,7 @@ random offset in the packet.
 Packet Re­ordering:
 
     sudo tc qdisc change dev eth2 root netem delay 10ms reorder 25% 50%
-    
+
 In this example, 25% of packets (with a correlation of 50%) will get sent immediately, others will
 be delayed by 10ms.
 
@@ -128,6 +133,7 @@ be delayed by 10ms.
 To limit the rate of connection using the tc command, use the following syntax:
 
     tc qdisc add dev [INTERFACE] root tbf rate [RATE] burst [BURST] latency [LATENCY]
+
 Where:
 
 - [INTERFACE] is the name of the network interface you want to limit.
