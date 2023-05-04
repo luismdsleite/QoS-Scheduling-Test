@@ -1,5 +1,5 @@
 ## Interfaces
-enp1s7:
+/etc/sysconfig/network-scripts/ifcfg-enp1s7:
 
 ```bash
 DEVICE=enp1s7
@@ -14,7 +14,7 @@ ONBOOT=yes
 NOZEROCONF=yes
 DEFROUTE=no
 ```
-enp1s6:
+/etc/sysconfig/network-scripts/ifcfg-enp1s6:
 
 ```bash
 DEVICE=enp1s6
