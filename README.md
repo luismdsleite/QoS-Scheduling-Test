@@ -68,6 +68,12 @@ ip netns exec v1s7 ip a add 192.168.10.2/24 dev enp1s7
 ip netns exec v1s7 ip r add default via 192.168.10.1
 ```
 
+Execute bash on a interface
+```bash
+ip netns exec v1s6 bash
+ip netns exec v1s7 bash
+```
+
 ## Linux Router
 Enable IP Forwarding (resets after reboot)
 
